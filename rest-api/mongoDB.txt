@@ -1,0 +1,88 @@
+1.require mongoose :
+
+  const mongoose = require('mongoose');
+
+2.define Schema example:
+
+  const userSchema = new mongoose.Schema({
+    firstName: {
+      type: String,
+      required : true
+    },
+    lastName: {
+      type: String
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    jobTitle: {
+      type: String
+    },
+    gender: {
+      type: String
+    }
+    
+  });
+
+
+3.setup model :
+
+  const User = mongoose.model('user', userSchema);
+
+4.connect mongoDB :
+
+  mongoose.connect('mongodb://127.0.0.1:27017/trial01').then(() => console.log('Connected MongoDB')).catch(err => console.log(err));
+
+5.POST example:
+
+  app.post('/api/users', async (req, res) => {
+    const body = req.body;
+    if (
+      !body.first_name || 
+      !body.last_name || 
+      !body.email || 
+      !body.job_title || 
+      !body.gender
+    ) {
+      return res.status(400).json({message: 'All fields are required'});
+    }
+
+    await User.create({
+      firstName: body.first_name, 
+      lastName: body.last_name, 
+      email: body.email, 
+      jobTitle: body.job_title,
+      gender: body.gender
+    });
+
+    return res.status(201).json({message: 'User created successfully'});
+  })
+
+6. GET example :
+
+  app.get('/api/users', async (req, res) => {
+    const allDbUsers = await User.find({});
+  return res.status(200).json(allDbUsers);
+  });
+
+7. GET, PATCH & DELETE using IDs example :
+
+  app.route('/api/users/:id')
+  .get(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.send('User not found');
+    } else { 
+      return res.json(user);
+    }
+  })
+  .patch(async (req, res) =>{
+    await User.findByIdAndUpdate(req.params.id, {lastName: 'changed'});
+    return res.json({message: 'User updated'});
+  })
+  .delete(async (req, res) =>{
+    await User.findByIdAndDelete(req.params.id);
+    return res.json({message: 'User deleted'});
+  });
