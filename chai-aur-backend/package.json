@@ -4,9 +4,12 @@
   "description": "",
   "license": "ISC",
   "author": "pratik",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
